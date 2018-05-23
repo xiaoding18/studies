@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace相当于是java中的package,用于防止sql语句冲突 -->
+<mapper namespace="testSpace">
+	<!-- mybatis针对于每一种sql语句,分别有insert/delete/update/select标签 -->
+	<!-- 根据用户id查询出所有的用户
+		id:唯一标识的一条sql;
+		parameterType:sql中参数的类型
+		resultType:返回值的类型,这个需要放置全限定名称
+	 -->
+	<select id="queryUserById" parameterType="int" resultType="study_day01.entity.User">
+		select * from user where id = #{id}
+	</select>
+	
+	<!-- 根据用户名称模糊查询用户 -->
+	<select id="queryUserByName" resultType="study_day01.entity.User" parameterType="string">
+		<!-- select * from user where username like #{username} -->
+		<!-- 这里我们使用字符串拼接符来实现传递参数的时候不用加两个%% -->
+		select * from user where username like '%${value}%'
+	</select>
+	
+	<!-- 新增一个用户 -->
+	<!-- insert标签用于放置新增的sql语句 -->
+	<!-- 
+		#{id}当使用这种占位符来充当参数的时候,在{}中填写的是属性名称
+	 -->
+	 
+	<!-- 如果我们需要在插入了这个对象之后获取这个主键的值,还能在insert标签中设置
+		这种方式只能应用于mysql中
+		keyColumn:表示主键在数据库中的列是哪个
+		keyProperty:表示主键在实体类中的属性是哪个
+		useGeneratedKeys:默认值为false,表示是否生成主键
+	 -->
+	<insert id="insertUser" parameterType="study_day01.entity.User" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
+	<!-- <insert id="insertUser" parameterType="study_day01.entity.User"> -->
+	
+		<!-- 如果是需要在查询之后获取主键的属性,则可以这样配置
+		selectKey标签
+		keyColumn属性:主键字段(在表中的)
+		keyProperty:主键属性(在实体类中的属性)
+		resultType:指定主键的类型,因为需要返回
+		order:指定是在insert语句之前执行还是在执行之后执行
+			after:执行之后执行
+			before:执行之前执行
+		我只能说这个属性设计的是真的蠢
+	 -->
+		<!-- <selectKey order="AFTER" keyColumn="id" keyProperty="id" resultType="id">
+			select LAST_INSERT_ID()
+		</selectKey> -->
+		insert into user values(#{id},#{username},#{birthday},#{sex},#{address})
+	</insert>
+	
+	
+	<!-- 一条修改语句 -->
+	<update id="updateUserById" parameterType="study_day01.entity.User">
+		update user set 
+			sex = #{sex},
+			address = #{address}
+		where 
+			id = #{id}
+	</update>
+	
+	
+	<select id="" ></select>
+	
+	<!-- 一条删除语句 -->
+	<delete id="deleteById" parameterType="study_day01.entity.User">
+		delete from user
+			where id = #{id}
+	</delete>
+</mapper>

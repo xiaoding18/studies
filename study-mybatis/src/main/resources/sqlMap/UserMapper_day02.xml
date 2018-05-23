@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace相当于是java中的package,用于防止sql语句冲突 -->
+<!-- namespace的属性值需要与所对应的接口全限定类名一致 -->
+<mapper namespace="study_day02.mapper.UserMapper">
+	
+	<!-- 在这个实体类中,开启二级缓存 -->
+	<cache></cache>
+	
+	<!-- 使用动态sql来进行查询 -->
+	<select id="findUserByDynamicSQL" resultType="user" parameterType="user">
+		select * from user
+		<!-- 使用where标签 -->
+		<where>
+			<if test="username != null and username != ''">
+				username like #{username}
+			</if>
+			<if test="sex != null and sex != ''">
+				and sex = #{sex}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 使用动态sql修改用户,使用set标签 -->
+	<update id="updateUserByDynamicSQL" parameterType="user">
+		update user
+		<set>
+			<if test="sex != null and sex != ''">
+				sex = #{sex},
+			</if>
+			
+			<if test="username != null and username != ''">
+				username = #{username},
+			</if>
+		</set>
+		where id = #{id}
+	
+	</update>
+	
+	<!-- 测试批量插入用户
+		使用foreach标签来插入用户,这个标签可以遍历数组或者是List集合
+	 -->
+	<insert id="insertUserBatch" parameterType="list">
+		insert into user values
+		<foreach collection="list" separator="," item="user">
+			(#{user.id},#{user.username},#{user.birthday},#{user.sex},#{user.address})
+		</foreach>
+	</insert>
+	
+	
+	<!-- 配置resultMap -->
+	<resultMap type="study_day02.entity.User" id="userAndOrders">
+		<!-- 先配置用户的信息 -->
+		<id column="id" property="id"/>
+		<result column="username" property="username"/>
+		<result column="birthday" property="birthday"/>
+		<result column="sex" property="sex"/>
+		<result column="address" property="address"/>
+		
+		<!-- 配置一个collection标签来表示order集合 -->
+		<collection property="orders" javaType="list" ofType="order">
+			<id column="id" property="id"/>
+			<result column="number" property="number"/>
+			<result column="createtime" property="createTime"/>
+		</collection>
+	</resultMap>
+	
+	
+	<!-- 查找一个用户,并且找到其所有的订单 -->
+	<select id="findUserAndOrders" resultMap="userAndOrders" parameterType="int">
+		SELECT 
+			u.*,
+			o.id,
+			o.number,
+			o.createtime 
+		FROM USER u 
+		LEFT JOIN orders o 
+			ON u.id = o.user_id 
+		WHERE u.id = #{id}
+	</select>
+	
+	
+	<!-- 测试一下查询所有的用户 -->
+	<select id="findAllUser" resultType="study_day02.entity.User">
+		select * from user
+	</select>
+	
+	
+</mapper>

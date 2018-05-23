@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace相当于是java中的package,用于防止sql语句冲突 -->
+<mapper namespace="study_day02.mapper.OrderMapper">
+	
+	<!-- 在这个实体类中,开启二级缓存 -->
+	<cache></cache>
+	
+	<!-- 不使用resultMap进行查询 -->
+	<select id="findAllOrders" resultType="order">
+		select * from orders
+	</select>
+	
+	<!-- 使用resultMap用来映射 -->
+	<resultMap type="order" id="orderResultMap">
+		<id column="id" property="id"/>
+		<result column="user_id" property="userId"/>
+	</resultMap>
+	
+	<!-- 使用resultMap进行查询 -->
+	<select id="findAllOrdersByResultMap" resultMap="orderResultMap">
+		select * from orders
+	</select>
+	
+	<!-- 使用动态sql语句,sql标签 -->
+	<sql id="orders_list">
+		id,user_id,number,createtime,note
+	</sql>
+	
+	<!-- 使用sql标签来查询 -->
+	<select id="findAllOrderByDynamic" resultType="order">
+		<!-- 在这里使用include标签来引用标签 -->
+		select <include refid="orders_list"/> from orders
+	</select>
+	
+	<!-- 再次创建一个order对象
+		type:表示这个对象所对应的类型
+		id:表示这个resultMap的唯一标识
+	 -->
+	<resultMap type="order" id="orderUserResultMap">
+		<!-- 配置订单主键对应关系 -->
+		<id column="id" property="id"/>
+		
+		<!-- 配置订单的普通字段对应关系
+			这些属性一个都不能少,少一个你获取到的结果就会少一个
+		 -->
+		<result column="user_id" property="userId"/>
+		<result column="number" property="number"/>
+		<result column="createtime" property="createTime"/>
+		<result column="note" property="note"/>
+		
+		<!-- association标签：配置一对一关联关系，说明：
+		 property属性：映射的属性名称
+		 javaType属性：映射的属性类型（必须要指定）-->
+		<association property="user" javaType="User">
+			<!-- 配置用户的主键对应关系 -->
+			<id column="user_id" property="id"/>
+			<!-- 配置用户普通字段对应关系
+				这个很坑,如果不配置下面的信息,就不会进行注入,是因为我们的列不同么?
+			 -->
+			<result column="username" property="username"/>
+			<result column="address" property="address"/>
+		</association>
+	
+	</resultMap>
+	
+	<!-- 测试一对一的查询 -->
+	<select id="oneToOneSelect" resultMap="orderUserResultMap">
+		SELECT 
+			o.*,username,address 
+		FROM orders o 
+			LEFT JOIN user u 
+			ON o.user_id = u.id
+	</select>
+	
+	
+	
+</mapper>

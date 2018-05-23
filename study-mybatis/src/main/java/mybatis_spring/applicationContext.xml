@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context.xsd
+            ">
+    <!-- 加载jdbc资源文件 -->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <!-- 开启基于注解的配置 -->
+    <context:component-scan base-package="mybatis_spring"/>
+    
+    <!-- 配置sqlSessionFactoryBean -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    	<property name="dataSource" ref="dataSource"/>
+    	<!-- 加载mybatis主配置文件 -->
+    	<property name="configLocation" value="classpath:mybatis_spring/sqlMapConfig.xml"/>
+    </bean>
+    
+    <!-- 定义一个数据源 -->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    	<property name="driverClassName" value="${jdbc.driverClass}"/>
+    	<property name="url" value="${jdbc.url}"/>
+    	<property name="username" value="${jdbc.username}"/>
+    	<property name="password" value="${jdbc.password}"/>
+    </bean>
+    
+    <!-- 配置spring的事务 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    	<property name="dataSource" ref="dataSource"/>
+    </bean>
+    
+    <!-- 配置userMapper -->
+    <bean id="userMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	<!-- 需要注入一个SqlSessionFactory -->
+    	<property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+    	
+    	<!-- 还需要注入一个需要声明的接口对象 -->
+    	<property name="mapperInterface" value="mybatis_spring.mapper.UserMapper"/>
+    </bean>
+
+    <!-- 配置mapper接口包扫描 -->
+    <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+    	<!-- 配置需要被扫描的包,如果需要扫描多个包,则使用","分开 -->
+    	<property name="basePackage" value="mybatis_spring.mapper"/>
+    </bean>
+
+    
+</beans>

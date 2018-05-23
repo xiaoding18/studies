@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+<!-- 根标签是configuration -->
+	
+
+	<!-- 可以加载外部的配置文件 -->
+	<properties resource="jdbc.properties"/>
+	
+	<!-- 配置二级缓存开启,二级缓存默认是关闭的
+		需要注意的是,二级缓存在这里开启之后,还需要在配置文件中再次开启
+	 -->
+	<settings>
+		<setting name="cacheEnabled" value="true"/>
+	</settings>
+
+
+	<!-- 配置别名 -->
+	<typeAliases>
+		<!-- 对于一个类配置别名 -->
+		<typeAlias type="study_day01.entity.User"/>
+		<typeAlias type="study_day01.entity.QueryVo"/>
+		<typeAlias type="study_day02.entity.Order"/>
+	</typeAliases>
+
+
+	<!-- 使用environments标签配置运行环境,可以配置多个environment子标签 -->
+	<environments default="development">
+		<environment id="development">
+			<!-- 配置默认的事务管理器,在这里我们使用jdbc事务(别的就不是jdbc事务么?) -->
+			<transactionManager type="jdbc"/>
+			<!-- 配置数据源 -->
+			<dataSource type="pooled">
+				<property name="driver" value="${jdbc.driverClass}"/>
+				<property name="url" value="${jdbc.url}"/>
+				<property name="username" value="${jdbc.username}"/>
+				<property name="password" value="${jdbc.password}"/>
+			</dataSource>
+			
+		</environment>
+	
+	</environments>
+	<!-- 加载其他的配置文件
+		resource属性:指定文件的位置
+		package:指定包的位置
+		如果指定包的属性,或者是mapper的属性,但是不给定值的那种,将会使用类的名称首字母小写的模式
+	 -->
+	<mappers>
+		<mapper resource="sqlmap/User.xml"/>
+		<mapper resource="sqlmap/UserMapper.xml"/>
+		<mapper resource="sqlmap/UserMapper_day02.xml"/>
+		<mapper resource="sqlmap/OrderMapper.xml"/>
+	</mappers>
+	
+	
+</configuration>

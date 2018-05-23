@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace相当于是java中的package,用于防止sql语句冲突 -->
+<mapper namespace="study_day01.mapper.UserMapper">
+	
+	<!-- 在这个实体类中,开启二级缓存 -->
+	<cache></cache>
+	
+	<!-- 编写一个方法,根据Id查询一个用户 -->
+	<select id="findUserById" resultType="user" parameterType="int">
+		select * from user where id = #{id}
+	</select>
+	
+	<!-- 保存一个用户对象 -->
+	<insert id="insertUser" parameterType="user">
+		insert into user values(#{id},#{username},#{birthday},#{sex},#{address})
+	</insert>
+	
+	<!-- 根据姓名模糊查询一个用户
+		这个查询应该返回的是一个List<User>类型,但是我们这里只需要写一个返回值类型是user就可以了
+	 -->
+	<select id="findUserByName" parameterType="queryVo" resultType="user">
+		select * from user where username like '%${user.username}%'
+	</select>
+	
+	<!-- 查询当前一共有多少个用户 -->
+	<select id="queryCountUser" resultType="int">
+		select count(*) from user
+	</select>
+	
+	
+	
+	
+	
+	
+	
+</mapper>

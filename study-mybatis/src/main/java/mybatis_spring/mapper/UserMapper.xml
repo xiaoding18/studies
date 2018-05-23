@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace相当于是java中的package,用于防止sql语句冲突 -->
+<mapper namespace="mybatis_spring.mapper.UserMapper">
+	<select id="findAllUser" resultType="user">
+		select * from user
+	</select>
+</mapper>

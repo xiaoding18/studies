@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<dataConfig> 
+<!--配置数据源-->
+<dataSource type="JdbcDataSource"   
+		  driver="com.mysql.jdbc.Driver"   
+		  url="jdbc:mysql:///study_lucene_solr"   
+		  user="root"   
+		  password="root"/>   
+<document> 
+	<!--配置sql语句执行结果，与商品业务域的对应关系
+		column表示列的名称,而后面的name表示这个列所对应的域的名称
+		entity表示这个类的抽象名称,而query则是需要填写本次查询的语句
+	-->
+	<entity name="product" query="SELECT pid,name,catalog,catalog_name,price,description,picture FROM products">
+		 <field column="pid" name="id"/> 
+		 <field column="name" name="product_name"/>
+		 <field column="catalog" name="product_catalog"/>
+		 <field column="catalog_name" name="product_catalog_name"/> 
+		 <field column="price" name="product_price"/> 
+		 <field column="description" name="product_description"/> 
+		 <field column="picture" name="product_picture"/> 
+	</entity>   
+</document> 
+</dataConfig>
