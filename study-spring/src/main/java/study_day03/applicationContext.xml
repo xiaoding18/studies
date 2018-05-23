@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
+            ">
+    
+    <!-- 使用注解来简化开发,我们在这里只需要开启注解扫描即可 -->
+    <context:component-scan base-package="study_day03"/>
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    
+    
+    <!-- 配置spring的aop -->
+    <!-- 
+    	专业术语名称
+    		连接点:
+    		切入点
+    		切面
+    
+    
+     -->
+    
+    <!-- 我们需要先声明配置 -->
+    <!-- <aop:config>
+    	配置一个切面
+    		使用aop:aspect标签配置一个切面
+    		id属性:表示这个切面的唯一标签
+    		ref属性:表示引用通知对象的名称
+    	
+    	<aop:aspect id="myAspect" ref="logAdvice">
+    		使用aop:before标签配置前置通知
+    		<aop:before method="printLog" pointcut-ref="logPointCut"/>
+    		
+    		<aop:around method="aroundLog" pointcut-ref="logPointCut"/>
+    		
+    		配置一个切点
+    		<aop:pointcut expression="execution(* *..*.*.*(..))" id="logPointCut"/>
+    		
+    	</aop:aspect>
+    </aop:config> -->
+    
+    
+    <!-- 重新配置一次spring的AOP -->
+    <aop:config><!-- 先写一个aop:config标签,在这个标签中可以配置aop的相关信息 -->
+    	<aop:aspect id="myAspect" ref="logAdvice"><!-- 配置一个切面,这个切面表示需要在其他代码中被执行的代码 -->
+    		<aop:before method="beforeMethod" pointcut-ref="anyPoint"/><!-- 配置一个前置通知,我们在这里使用引入切点的方式 -->
+    		<!-- 配置一个切点,切点表示将会和切面连接的点
+    			这里配置的表达式是表示service.impl中的任意方法都会被拦截
+    		 -->
+    		<aop:pointcut expression="execution(* study_day03.service.impl.*.*(..))" id="anyPoint"/>
+    		
+    	</aop:aspect>
+    	
+    	
+    	
+    
+    </aop:config>
+    
+    <!-- 启用spring对于注解的支持 -->
+    <aop:aspectj-autoproxy/>
+    
+</beans>

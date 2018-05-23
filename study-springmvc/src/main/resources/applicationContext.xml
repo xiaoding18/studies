@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/tx
+            http://www.springframework.org/schema/tx/spring-tx.xsd
+            http://www.springframework.org/schema/context 
+            http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/mvc
+            http://www.springframework.org/schema/mvc/spring-mvc.xsd
+            ">
+    <!-- 加载jdbc资源文件 -->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <!-- 加载文件上传配置文件 -->
+    <context:property-placeholder location="classpath:fileUpload.properties"/>
+    <!-- 开启基于注解的配置 -->
+    <context:component-scan base-package="cn.willhoo.study_springmvc"/>
+    
+    <!-- 配置sqlSessionFactoryBean -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    	<property name="dataSource" ref="dataSource"/>
+    	<!-- 加载mybatis主配置文件 -->
+    	<property name="configLocation" value="classpath:sqlMapConfig.xml"/>
+    </bean>
+    
+    <!-- 定义一个数据源 -->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+    	<property name="driverClass" value="${jdbc.driverClass}"/>
+    	<property name="jdbcUrl" value="${jdbc.url}"/>
+    	<property name="user" value="${jdbc.username}"/>
+    	<property name="password" value="${jdbc.password}"/>
+    </bean>
+    
+    <!-- 配置spring的事务 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    	<property name="dataSource" ref="dataSource"/>
+    </bean>
+    
+    
+    <!-- 配置mapper接口包扫描 -->
+    <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+    	<!-- 配置需要被扫描的包,如果需要扫描多个包,则使用","分开 -->
+    	<property name="basePackage" value="cn.willhoo.study_springmvc.mapper"/>
+    </bean>
+    <!-- 开启基于主机的事务 -->
+   	<tx:annotation-driven/>
+   	
+   	<!-- 分别配置处理器映射器和处理器适配器
+   		有默认的映射器,但是我们 都使用最新的这个
+   		分别是使用这两个类:
+   		RequestMappingHandlerMapping
+   		RequestMappingHandlerAdaptor
+   	 -->
+   	
+   	<!-- 处理器映射器
+   	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
+   	处理器适配器
+   	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"/>
+	 -->
+	<!-- 配置视图解析器,其作用是可以在controller中不用将地址写的非常详细 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<!-- 配置默认的视图路径 -->
+		<property name="prefix" value="/WEB-INF/jsp/"/>
+		<!-- 配置默认的文件扩展名 -->
+		<property name="suffix" value=".jsp"/>
+	</bean>
+	
+	<!-- 还有能一个标签能配完两个的,并且不需要写类名
+		其作用是开启注解的驱动 
+		conversionService属性:
+			用于声明自定义的参数类型转换器
+	 -->
+	<mvc:annotation-driven/>
+	
+	<!-- 当参数的转换不能满足要求时,我们可以配置自定义的参数类型转换器服务 -->
+   	<bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+   		<property name="converters">
+   			<!-- 使用set标签,可以声明多个自定义参数类型转换器 -->
+   			<set>
+   				<!-- 声明我们自定义的参数类型转换器 -->
+   				<bean class="cn.willhoo.study_springmvc.converter.SimpleDateConverter"/>
+   			</set>
+   		</property>
+   	</bean>
+    
+    <!-- 配置文件上传解析器
+    	有两个解析器,都实现了MultipartResolver接口,我们使用的是CommonsMultipartResolver解析器
+    	这里的文件上传解析器需要注意,id属性必须是解析器所实现接口的类名,然后首字母小写
+    	Provides "maxUploadSize", "maxInMemorySize" and "defaultEncoding" settings as
+ 		* bean properties
+     -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 配置最大文件大小,以字节为单位 -->
+		<property name="maxUploadSize" value="10485760"/>
+		<!-- 配置文件上传缓存大小 -->
+		<property name="maxInMemorySize" value="4096"/>
+		<!-- 配置编码格式 -->
+		<property name="defaultEncoding" value="UTF-8"/>
+	</bean>
+    
+</beans>

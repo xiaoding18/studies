@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/mvc
+       		http://www.springframework.org/schema/mvc/spring-mvc.xsd
+            ">
+    <!-- 给定controller的包,这个必须要写 -->
+    <context:component-scan base-package="cn.willhoo.crm.controller"/>
+   	<mvc:annotation-driven/>
+   	
+   	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 配置最大文件大小,以字节为单位 -->
+		<property name="maxUploadSize" value="10485760"/>
+		<!-- 配置文件上传缓存大小 -->
+		<property name="maxInMemorySize" value="4096"/>
+		<!-- 配置编码格式 -->
+		<property name="defaultEncoding" value="UTF-8"/>
+	</bean>
+	
+	
+	<!-- 配置视图解析器,其作用是可以在controller中不用将地址写的非常详细 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<!-- 配置默认的视图路径 -->
+		<property name="prefix" value="/WEB-INF/jsp/"/>
+		<!-- 配置默认的文件扩展名 -->
+		<property name="suffix" value=".jsp"/>
+	</bean>
+	
+	<!-- 放行所有的静态资源 -->
+	<mvc:default-servlet-handler/>
+	
+</beans>

@@ -6,8 +6,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="study_day02.mapper.OrderMapper">
 	
 	<!-- 在这个实体类中,开启二级缓存 -->
-	<cache></cache>
-	
+	<cache/>
+
+
 	<!-- 不使用resultMap进行查询 -->
 	<select id="findAllOrders" resultType="order">
 		select * from orders

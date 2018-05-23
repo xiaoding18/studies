@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+<!-- 根标签是configuration -->
+	
+
+	<!-- 可以加载外部的配置文件 -->
+	<properties resource="jdbc.properties"/>
+	
+	<!-- 配置二级缓存开启,二级缓存默认是关闭的
+		需要注意的是,二级缓存在这里开启之后,还需要在配置文件中再次开启
+	 -->
+	<settings>
+		<setting name="cacheEnabled" value="true"/>
+	</settings>
+
+
+	<!-- 配置别名 -->
+	<typeAliases>
+		<!-- 对于一个类配置别名 -->
+		<typeAlias type="cn.willhoo.study_springmvc.entity.User"/>
+	</typeAliases>
+
+
+	<!-- 加载其他的配置文件
+		resource属性:指定文件的位置
+	 -->
+	<mappers>
+		<mapper resource="cn/willhoo/study_springmvc/mapper/UserMapper.xml"/>
+	</mappers>
+	
+	
+	
+</configuration>

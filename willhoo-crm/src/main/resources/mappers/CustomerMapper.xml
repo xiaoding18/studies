@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.willhoo.crm.mapper.CustomerMapper">
+
+	
+
+
+	<sql id="customerCondition">
+		<where>
+			<if test="custName != null and custName != ''">
+				cust_name = #{custName} and
+			</if>
+			
+			<if test="custSource != null and custSource != ''">
+				cust_source = #{custSource} and
+			</if>
+			
+			<if test="custIndustry != null and custIndustry != ''">
+				cust_industry = #{custIndustry} and 
+			</if>
+			
+			<if test="custLevel != null and custLevel != ''">
+				cust_level = #{custLevel}
+			</if>
+		</where>
+	
+	</sql>
+	
+	<select id="findAllByCondition" resultType="customer" parameterType="queryVo">
+	
+		SELECT 
+		  c.cust_id AS cust_id,
+		  c.cust_name AS cust_name,
+		  c.cust_user_id AS  cust_user_id,
+		  c.cust_create_id AS cust_create_id,
+		  b1.dict_item_name AS cust_source,
+		  b2.dict_item_name AS cust_industry,
+		  b3.dict_item_name AS cust_level,
+		  c.cust_linkman AS cust_linkman,
+		  c.cust_phone AS cust_phone,
+		  c.cust_mobile AS cust_mobile,
+		  c.cust_zipcode AS cust_zipcode,
+		  c.cust_address AS cust_address,
+		  c.cust_createtime AS cust_createtime
+		FROM 
+		  customer c
+		LEFT JOIN base_dict b1
+		  ON b1.dict_id = c.cust_source
+		LEFT JOIN base_dict b2
+		  ON b2.dict_id = c.cust_industry
+		LEFT JOIN base_dict b3
+		  ON b3.dict_id = c.cust_level
+		
+		<!-- 条件sql -->
+		<include refid="customerCondition"/>
+		
+		LIMIT #{start},#{rows}
+	</select>
+
+	<select id="findCountByCondition" parameterType="queryVo" resultType="long">
+		select count(*) from customer c
+		<include refid="customerCondition"/>
+	</select>
+    <select id="findCustomerById" resultType="cn.willhoo.crm.domain.Customer">
+
+
+	</select>
+
+
+</mapper>

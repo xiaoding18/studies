@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
+            ">
+                  
+    <context:component-scan base-package="study_day04"/>
+    <!-- 定义一个JDBCTemplate -->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+    	<property name="dataSource" ref="dataSource"/>
+    </bean>
+    
+    
+    <!-- 定义一个数据源 -->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    	<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+    	<property name="url" value="jdbc:mysql:///study_spring"/>
+    	<property name="username" value="root"/>
+    	<property name="password" value="root"/>
+    </bean>
+    
+    
+    
+    <!-- 配置spring的事务 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    	<property name="dataSource" ref="dataSource"/>
+    </bean>
+    
+    <!-- 配置通知 -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+    	<!-- 配置事务的属性 -->
+    	<tx:attributes>
+    		<!-- tx:method标签说明
+    			name:被增强的方法名称(可以使用通配符*),比如find*表示所有以find开头的方法
+    			isolation:可以配置事务的隔离级别,默认值是DEFAULT,通常我们在实际项目中使用默认值即可
+    			propagation:传播行为,可以配置事务的传播行为,通常增/删/改方法使用REQUIRED,查询方法使用SUPPORTS
+    			timeout:配置事务超时,默认值是-1表示永不超时,实际项目中使用-1就行了
+    			read-onlu:配置是否是只读事务,true/false,增删改方法使用false,而查询方法使用true
+    			no-rollback-for:指定发生某个异常使用,不会回滚,发生其他的异常将会回滚,没有默认值,所有的异常都会回滚
+    			rollback-for:指定发生某个异常才会回滚,发生其他的异常才会回滚,没有默认值,所有异常都会回滚
+    		 -->
+    		<tx:method name="find*" propagation="SUPPORTS" read-only="true"/>
+    		
+    		<!-- 配置增删改的方法 -->
+    		<tx:method name="transfer" propagation="REQUIRED" read-only="false"/>
+    	</tx:attributes>
+    
+    </tx:advice>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <!-- 配置事务的通知 -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+    	<!-- 配置事务的属性 -->
+    	<tx:attributes>
+    		<!-- 为匹配规则了的方法添加事务,可以使用通配符 -->
+    		<!-- 查询事务
+    			propagation:
+    				配置事务的扩散性,默认是REQUEIRED,即需要事务,但是这个方法是读取的方法,不需要事务
+    			read-only:
+    				配置是否只读,默认值为false,即可以写,我们这里只需要查询,所以使用true
+    		 -->
+    		<tx:method name="find*" propagation="SUPPORTS" read-only="true"/>
+    		<!-- 增/删/改就都可以使用默认值了 -->
+    		<tx:method name="transfer*" propagation="REQUIRED" />
+    		
+    	</tx:attributes>
+    
+    </tx:advice>
+    
+    <!-- 配置切点 -->
+    <aop:config>
+    	<!-- 这里我们只需要配置切点了
+    		编写切入点表达式,使其只对service的实现类生效
+    	 -->
+    	<aop:pointcut expression="execution(* study_day04.service.impl.*.**(..))" id="myPt1"/>
+    	<!-- 建立切点与事务管理器之间的联系 -->
+    	<aop:advisor advice-ref="txAdvice" pointcut-ref="myPt1"/>
+    </aop:config>
+    
+    
+    
+    
+    
+    
+    <!-- 配置声明 AOP配置 -->
+    <aop:config>
+    	<!-- 直接配置切入点表达式 -->
+    	<aop:pointcut expression="execution(* study_day04.service.impl.*.*(..))" id="txPt1"/>
+    	<!-- 建立切点与事务管理器之间的关系 -->
+    	<aop:advisor advice-ref="txAdvice" pointcut-ref="txPt1"/>
+    
+    </aop:config>
+    
+    <!-- @Transactional注解和xml文件中的含义是一致的,这个注解可以出现在接口,类,方法上
+    	出现在接口上,表示这个接口的所有实现类都有事务支持
+    	出现在类上,表示这个类中的所有方法都有事务支持
+    	出现在方法上,表示这个方法有事务支持
+    	如果三者同时出现,则优先级为:方法>类>接口     即范围越小优先级越高
+     -->
+     
+    
+</beans>
